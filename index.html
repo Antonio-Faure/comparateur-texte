@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparateur de Texte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1 {
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .diff {
+            white-space: pre-wrap;
+        }
+        .added {
+            background-color: #ddffdd;
+        }
+        .removed {
+            background-color: #ffdddd;
+            text-decoration: line-through;
+        }
+    </style>
+</head>
+<body>
+    <h1>Comparateur de Texte</h1>
+    <p>Entrez deux textes pour voir les différences :</p>
+
+    <div>
+        <h3>Texte 1</h3>
+        <textarea id="text1"></textarea>
+    </div>
+
+    <div>
+        <h3>Texte 2</h3>
+        <textarea id="text2"></textarea>
+    </div>
+
+    <button onclick="compareTexts()">Comparer</button>
+
+    <div id="result"></div>
+
+    <script>
+        function compareTexts() {
+            const text1 = document.getElementById('text1').value;
+            const text2 = document.getElementById('text2').value;
+            const resultDiv = document.getElementById('result');
+
+            if (!text1 && !text2) {
+                resultDiv.innerHTML = '<p>Aucun texte à comparer.</p>';
+                return;
+            }
+
+            const diff = generateDiff(text1, text2);
+            resultDiv.innerHTML = '<h3>Résultat de la comparaison :</h3>' + diff;
+        }
+
+        function generateDiff(text1, text2) {
+            const lines1 = text1.split('\n');
+            const lines2 = text2.split('\n');
+            const maxLength = Math.max(lines1.length, lines2.length);
+            let diff = '';
+
+            for (let i = 0; i < maxLength; i++) {
+                const line1 = lines1[i] || '';
+                const line2 = lines2[i] || '';
+
+                if (line1 !== line2) {
+                    if (line1 && !line2) {
+                        diff += `<span class="diff removed">${escapeHtml(line1)}\n</span>`;
+                    } else if (!line1 && line2) {
+                        diff += `<span class="diff added">${escapeHtml(line2)}\n</span>`;
+                    } else {
+                        diff += `<span class="diff removed">${escapeHtml(line1)}\n</span>`;
+                        diff += `<span class="diff added">${escapeHtml(line2)}\n</span>`;
+                    }
+                } else {
+                    diff += `<span class="diff">${escapeHtml(line1)}\n</span>`;
+                }
+            }
+
+            return diff;
+        }
+
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/\'/g, "&#039;")
+                .replace(/\'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>
